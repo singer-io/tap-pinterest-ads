@@ -14,7 +14,9 @@ pipx install git+https://github.com/gthesheep/tap-pinterest-ads.git
 
 ### Accepted Config Options
 
-- **access_token**: Access token obtained from the Pinterest OAuth flow
+- **client_id**: App ID for your Pinterest App
+- **client_secret**: App secret key
+- **refresh_token**: Refresh token obtained from the OAuth user flow
 - **start_date**: Start date to collect ad analytics from
 
 A full list of supported settings and capabilities for this
@@ -26,12 +28,12 @@ tap-pinterest-ads --about
 
 ### Source Authentication and Authorization
 
-In order to obtain the ```access_token``` for your Pinterest Ads account
+In order to obtain the ```refresh_token``` for your Pinterest Ads account
 please follow the OAuth 2.0 flow described by the source docs, [here](https://developers.pinterest.com/docs/api/v5/#tag/Authentication).
 We can look to add support for this process in here in the future.
 
 Beyond obtaining the Trial Access for the API, filling of historical data
-may require upgrading to Standard Access.
+may require upgrading to Standard Access, depending on use of the ads service.
 
 ## Usage
 

@@ -27,10 +27,22 @@ class TapPinterestAds(Tap):
 
     config_jsonschema = th.PropertiesList(
         th.Property(
-            "access_token",
+            "client_id",
             th.StringType,
             required=True,
-            description="The token to authenticate against the API service"
+            description="App ID"
+        ),
+        th.Property(
+            "client_secret",
+            th.StringType,
+            required=True,
+            description="App secret key"
+        ),
+        th.Property(
+            "refresh_token",
+            th.StringType,
+            required=True,
+            description="Refresh token obtained from the OAuth user flow"
         ),
         th.Property(
             "start_date",
