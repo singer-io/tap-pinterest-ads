@@ -2,8 +2,11 @@
 import requests
 from typing import Any, Dict, Optional, Iterable
 
+from memoization import cached
 from singer_sdk.helpers.jsonpath import extract_jsonpath
 from singer_sdk.streams import RESTStream
+
+from tap_pinterest_ads.auth import PinterestAuthenticator
 
 
 class PinterestStream(RESTStream):
@@ -13,6 +16,12 @@ class PinterestStream(RESTStream):
 
     records_jsonpath = "$.items[*]"  # Or override `parse_response`.
     next_page_token_jsonpath = "$.bookmark"  # Or override `get_next_page_token`.
+
+    @property
+    @cached
+    def authenticator(self) -> PinterestAuthenticator:
+        """Return a new authenticator object."""
+        return PinterestAuthenticator.create_for_stream(self)
 
     @property
     def http_headers(self) -> dict:
