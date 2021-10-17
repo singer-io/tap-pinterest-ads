@@ -233,11 +233,11 @@ class AdAnalyticStream(PinterestStream):
         self, context: Optional[dict], next_page_token: Optional[Any]
     ) -> Optional[dict]:
         start_date = self.get_starting_timestamp(context)
-        today = datetime.datetime.now(tz=start_date.tzinfo)
+        yesterday = datetime.datetime.now(tz=start_date.tzinfo) - datetime.timedelta(days=1)
         params = {
             'start_date': start_date.strftime('%Y-%m-%d'),
             'end_date': (
-                min(start_date + datetime.timedelta(days=100), today)
+                min(start_date + datetime.timedelta(days=100), yesterday)
             ).strftime('%Y-%m-%d'),
             'granularity': 'DAY',
             'columns': ','.join(ANALYTICS),
