@@ -27,7 +27,7 @@ class PinterestStream(RESTStream):
     def http_headers(self) -> dict:
         """Return the http headers needed."""
         headers = {'Accept': 'application/json'}
-        headers["Authorization"] = "Bearer {token}".format(token=self.config.get("access_token"))
+        headers["Authorization"] = "Bearer {token}".format(token=self.authenticator.access_token)
         return headers
 
     def get_next_page_token(
