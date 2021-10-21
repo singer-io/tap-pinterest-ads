@@ -61,7 +61,6 @@ class PinterestAuthenticator(OAuthAuthenticator, metaclass=SingletonMeta):
             token_response.raise_for_status()
             print(token_response.url)
             print(token_response.headers)
-            print(token_response.data)
             print(token_response.json())
             self.logger.info("OAuth authorization attempt was successful.")
         except Exception as ex:
