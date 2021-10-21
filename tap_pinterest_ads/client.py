@@ -27,10 +27,11 @@ class PinterestStream(RESTStream):
     def http_headers(self) -> dict:
         """Return the http headers needed."""
         if not self.authenticator.is_token_valid():
+            self.logger.info("token invalid")
             self.authenticator.update_access_token()
         headers = {'Accept': 'application/json'}
         headers["Authorization"] = "Bearer {token}".format(token=self.authenticator.access_token)
-        print("headers", headers)
+        self.logger.info(headers)
         return headers
 
     def get_next_page_token(
