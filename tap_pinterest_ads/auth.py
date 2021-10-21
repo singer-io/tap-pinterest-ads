@@ -13,11 +13,11 @@ class PinterestAuthenticator(OAuthAuthenticator, metaclass=SingletonMeta):
     @property
     def oauth_request_body(self) -> dict:
         return {
-            'scope': self.oauth_scopes,
-            'client_id': self.config['client_id'],
-            'client_secret': self.config['client_secret'],
-            'grant_type': 'refresh_token',
-            'refresh_token': self.config['refresh_token']
+            "scope": self.oauth_scopes,
+            "client_id": self.config['client_id'],
+            "client_secret": self.config['client_secret'],
+            "grant_type": "refresh_token",
+            "refresh_token": self.config['refresh_token']
         }
 
     # Can probably remove some scopes after testing
@@ -44,12 +44,12 @@ class PinterestAuthenticator(OAuthAuthenticator, metaclass=SingletonMeta):
         """
         request_time = utc_now()
         auth_request_payload = self.oauth_request_payload
-        print(auth_request_payload)
+        self.logger.info(auth_request_payload)
         token_response = requests.post(
             self.auth_endpoint,
             headers={
                 "Content-Type": "application/x-www-form-urlencoded",
-                "Authorization": "Basic {auth}".format(
+                "Authorization": "Bearer {auth}".format(
                     auth=base64.b64encode('{client_id}:{client_secret}'.format(
                         client_id=self.config['client_id'],
                         client_secret=self.config['client_secret']
@@ -59,10 +59,11 @@ class PinterestAuthenticator(OAuthAuthenticator, metaclass=SingletonMeta):
             data=auth_request_payload
         )
         try:
+            self.logger.info(token_response.content)
             token_response.raise_for_status()
-            print(token_response.url)
-            print(token_response.headers)
-            print(token_response.json())
+            self.logger.info(token_response.url)
+            self.logger.info(token_response.headers)
+            self.logger.info(token_response.json())
             self.logger.info("OAuth authorization attempt was successful.")
         except Exception as ex:
             raise RuntimeError(
