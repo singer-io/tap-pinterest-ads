@@ -44,7 +44,6 @@ class PinterestAuthenticator(OAuthAuthenticator, metaclass=SingletonMeta):
         """
         request_time = utc_now()
         auth_request_payload = self.oauth_request_payload
-        self.logger.info(auth_request_payload)
         token_response = requests.post(
             self.auth_endpoint,
             headers={
@@ -59,11 +58,7 @@ class PinterestAuthenticator(OAuthAuthenticator, metaclass=SingletonMeta):
             data=auth_request_payload
         )
         try:
-            self.logger.info(token_response.content)
             token_response.raise_for_status()
-            self.logger.info(token_response.url)
-            self.logger.info(token_response.headers)
-            self.logger.info(token_response.json())
             self.logger.info("OAuth authorization attempt was successful.")
         except Exception as ex:
             raise RuntimeError(
