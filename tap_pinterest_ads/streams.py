@@ -176,8 +176,7 @@ class AdStream(PinterestStream):
         """Return a context dictionary for child streams."""
         return {
             "ad_account_id": record["ad_account_id"],
-            "ad_id": record["id"],
-            "state": record["state"]
+            "ad_id": record["id"]
         }
 
 
