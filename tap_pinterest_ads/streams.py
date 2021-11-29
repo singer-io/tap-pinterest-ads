@@ -177,6 +177,7 @@ class AdStream(PinterestStream):
         return {
             "ad_account_id": record["ad_account_id"],
             "ad_id": record["id"],
+            "state": record["state"]
         }
 
 
