@@ -20,37 +20,43 @@ STREAM_TYPES = [
     AdAnalyticStream
 ]
 
+CONFIG = th.PropertiesList(
+    th.Property(
+        "client_id",
+        th.StringType,
+        required=True,
+        description="App ID"
+    ),
+    th.Property(
+        "client_secret",
+        th.StringType,
+        required=True,
+        description="App secret key"
+    ),
+    th.Property(
+        "refresh_token",
+        th.StringType,
+        required=True,
+        description="Refresh token obtained from the OAuth user flow"
+    ),
+    th.Property(
+        "start_date",
+        th.DateTimeType,
+        required=True,
+        description="Date to start collection analytics from"
+    ),
+).to_dict()
+CONFIG["stream_maps"] = {
+    "ad_analytics": {
+        "__filter__": "record['status'] == 'ACTIVE'"
+    }
+}
 
 class TapPinterestAds(Tap):
     """pinterest tap class."""
     name = "tap-pinterest-ads"
 
-    config_jsonschema = th.PropertiesList(
-        th.Property(
-            "client_id",
-            th.StringType,
-            required=True,
-            description="App ID"
-        ),
-        th.Property(
-            "client_secret",
-            th.StringType,
-            required=True,
-            description="App secret key"
-        ),
-        th.Property(
-            "refresh_token",
-            th.StringType,
-            required=True,
-            description="Refresh token obtained from the OAuth user flow"
-        ),
-        th.Property(
-            "start_date",
-            th.DateTimeType,
-            required=True,
-            description="Date to start collection analytics from"
-        ),
-    ).to_dict()
+    config_jsonschema = 
 
     def discover_streams(self) -> List[Stream]:
         """Return a list of discovered streams."""
