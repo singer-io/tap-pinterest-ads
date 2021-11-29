@@ -56,7 +56,7 @@ class TapPinterestAds(Tap):
     """pinterest tap class."""
     name = "tap-pinterest-ads"
 
-    config_jsonschema = 
+    config_jsonschema = CONFIG
 
     def discover_streams(self) -> List[Stream]:
         """Return a list of discovered streams."""
