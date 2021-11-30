@@ -287,7 +287,7 @@ class AdAnalyticStream(PinterestStream):
         decorator: Callable = backoff.on_exception(
             backoff.expo,
             (RetriableAPIError,),
-            max_tries=10,
-            factor=50,
+            max_tries=5,
+            factor=5,
         )(func)
         return decorator
