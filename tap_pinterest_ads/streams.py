@@ -2,6 +2,8 @@
 import copy
 import datetime
 
+import requests
+from singer_sdk.exceptions import FatalAPIError, RetriableAPIError
 from typing import Any, Optional
 
 from tap_pinterest_ads.client import PinterestStream
