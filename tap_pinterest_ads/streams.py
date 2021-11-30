@@ -288,6 +288,6 @@ class AdAnalyticStream(PinterestStream):
             backoff.expo,
             (RetriableAPIError,),
             max_tries=5,
-            factor=10,
+            factor=50,
         )(func)
         return decorator
