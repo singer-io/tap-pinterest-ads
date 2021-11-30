@@ -247,3 +247,24 @@ class AdAnalyticStream(PinterestStream):
             params['bookmark'] = next_page_token
         self.logger.debug(params)
         return params
+
+    def validate_response(self, response: requests.Response) -> None:
+        if response.status_code == 429:
+            msg = (
+                f"{response.status_code} Server Error: "
+                f"{response.reason} for path: {self.path}"
+            )
+            raise RetriableAPIError(msg)
+        elif 400 <= response.status_code < 500:
+            msg = (
+                f"{response.status_code} Client Error: "
+                f"{response.reason} for path: {self.path}"
+            )
+            raise FatalAPIError(msg)
+
+        elif 500 <= response.status_code < 600:
+            msg = (
+                f"{response.status_code} Server Error: "
+                f"{response.reason} for path: {self.path}"
+            )
+            raise RetriableAPIError(msg)
