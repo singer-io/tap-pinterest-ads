@@ -270,3 +270,23 @@ class AdAnalyticStream(PinterestStream):
                 f"{response.reason} for path: {self.path}"
             )
             raise RetriableAPIError(msg)
+
+    def request_decorator(self, func: Callable) -> Callable:
+        """Instantiate a decorator for handling request failures.
+
+        Developers may override this method to provide custom backoff or retry
+        handling.
+
+        Args:
+            func: Function to decorate.
+
+        Returns:
+            A decorated method.
+        """
+        decorator: Callable = backoff.on_exception(
+            backoff.expo,
+            (RetriableAPIError,),
+            max_tries=5,
+            factor=10,
+        )(func)
+        return decorator
