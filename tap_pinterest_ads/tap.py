@@ -10,14 +10,16 @@ from tap_pinterest_ads.streams import (
     CampaignStream,
     AdGroupStream,
     AdStream,
-    AdAnalyticStream
+    AdAnalyticsStream,
+    AccountAnalyticsStream
 )
 STREAM_TYPES = [
     AdAccountStream,
     CampaignStream,
     AdGroupStream,
     AdStream,
-    AdAnalyticStream
+    AdAnalyticsStream,
+    AccountAnalyticsStream
 ]
 
 CONFIG = th.PropertiesList(
@@ -42,7 +44,7 @@ CONFIG = th.PropertiesList(
     th.Property(
         "start_date",
         th.DateTimeType,
-        required=True,
+        default="2019-10-17T00:00:00Z",
         description="Date to start collection analytics from"
     ),
 ).to_dict()

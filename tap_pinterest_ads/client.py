@@ -1,10 +1,13 @@
 """REST client handling, including PinterestStream base class."""
+from typing import Any, Dict, Optional, Iterable, Callable
+
+import backoff
 import requests
-from typing import Any, Dict, Optional, Iterable
 
 from memoization import cached
 from singer_sdk.helpers.jsonpath import extract_jsonpath
 from singer_sdk.streams import RESTStream
+from singer_sdk.exceptions import FatalAPIError, RetriableAPIError
 
 from tap_pinterest_ads.auth import PinterestAuthenticator
 
@@ -61,3 +64,39 @@ class PinterestStream(RESTStream):
     def parse_response(self, response: requests.Response) -> Iterable[dict]:
         """Parse the response and return an iterator of result rows."""
         yield from extract_jsonpath(self.records_jsonpath, input=response.json())
+
+    def validate_response(self, response: requests.Response) -> None:
+        if response.status_code == 429 or 500 <= response.status_code < 600:
+            msg = (
+                f"{response.status_code} Server Error: "
+                f"{response.reason} for path: {self.path}"
+                f"\n{response.text}"
+            )
+            raise RetriableAPIError(msg)
+        elif 400 <= response.status_code < 500:
+            msg = (
+                f"{response.status_code} Client Error: "
+                f"{response.reason} for path: {self.path}"
+                f"\n{response.text}"
+            )
+            raise FatalAPIError(msg)
+
+    def request_decorator(self, func: Callable) -> Callable:
+        """Instantiate a decorator for handling request failures.
+
+        Developers may override this method to provide custom backoff or retry
+        handling.
+
+        Args:
+            func: Function to decorate.
+
+        Returns:
+            A decorated method.
+        """
+        decorator: Callable = backoff.on_exception(
+            backoff.expo,
+            (RetriableAPIError,),
+            max_tries=5,
+            factor=5,
+        )(func)
+        return decorator
