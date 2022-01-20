@@ -248,6 +248,11 @@ class AdAnalyticsStream(PinterestStream):
         self.logger.debug(params)
         return params
 
+    def post_process(self, row: dict, context: Optional[dict] = None) -> Optional[dict]:
+        row["DATE"] = datetime.datetime.strptime(row["DATE"], "%Y-%m-%d").strftime("%Y-%m-%dT%H:%M:%SZ")
+        return row
+
+    
 ACCOUNT_ANALYTICS_COLUMNS = [
     "AD_GROUP_ENTITY_STATUS", "CAMPAIGN_DAILY_SPEND_CAP",
     "CAMPAIGN_ENTITY_STATUS", "CAMPAIGN_ID", "CAMPAIGN_LIFETIME_SPEND_CAP", "CAMPAIGN_NAME",
@@ -315,3 +320,7 @@ class AccountAnalyticsStream(PinterestStream):
             params['bookmark'] = next_page_token
         self.logger.debug(params)
         return params
+    
+    def post_process(self, row: dict, context: Optional[dict] = None) -> Optional[dict]:
+        row["DATE"] = datetime.datetime.strptime(row["DATE"], "%Y-%m-%d").strftime("%Y-%m-%dT%H:%M:%SZ")
+        return row
