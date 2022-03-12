@@ -4,6 +4,8 @@
 
 Built with the [Meltano Tap SDK](https://sdk.meltano.com) for Singer Taps.
 
+**Note:** Ad Analytics are filtered for `ACTIVE` ads only, hence totals may not match that of the account analytics, this is done to reduce the number of requests due to the limits imposed by the API.
+
 ## Installation
 
 ```bash
