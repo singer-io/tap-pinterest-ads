@@ -47,18 +47,17 @@ CONFIG = th.PropertiesList(
         default="2019-10-17T00:00:00Z",
         description="Date to start collection analytics from"
     ),
+    th.Property(
+        "is_backfilled",
+        th.BooleanType,
+        default=False,
+        description="Set to True once backfilled in order to reduce API calls per day"
+    ),
 ).to_dict()
-CONFIG["stream_maps"] = {
-    "ad_analytics": {
-        "__filter__": "record['status'] == 'ACTIVE'"
-    }
-}
 
 class TapPinterestAds(Tap):
     """pinterest tap class."""
     name = "tap-pinterest-ads"
-
-    config_jsonschema = CONFIG
 
     def discover_streams(self) -> List[Stream]:
         """Return a list of discovered streams."""

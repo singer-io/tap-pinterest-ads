@@ -177,7 +177,8 @@ class AdStream(PinterestStream):
         """Return a context dictionary for child streams."""
         return {
             "ad_account_id": record["ad_account_id"],
-            "ad_id": record["id"]
+            "ad_id": record["id"],
+            "ad_status": record["status"]
         }
 
 
@@ -251,6 +252,15 @@ class AdAnalyticsStream(PinterestStream):
     def post_process(self, row: dict, context: Optional[dict] = None) -> Optional[dict]:
         row["DATE"] = datetime.datetime.strptime(row["DATE"], "%Y-%m-%d").strftime("%Y-%m-%dT%H:%M:%SZ")
         return row
+
+    def get_records(self, context: Optional[dict] = None) -> Iterable[Dict[str, Any]]:
+        """Return a generator of row-type dictionary objects.
+        Each row emitted should be a dictionary of property names to their values.
+        """
+        if context["ad_status"] != "ACTIVE" and self.config["is_backfilled"] == True:
+            self.logger.debug("Skipping inactive ad {ad_id} sync.".format(ad_id=context["ad_id"]))
+            return []
+        return super().get_records(context)
 
     
 ACCOUNT_ANALYTICS_COLUMNS = [
