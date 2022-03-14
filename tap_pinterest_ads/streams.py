@@ -3,7 +3,7 @@ import copy
 import datetime
 
 import requests
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Dict, Iterable, Optional
 
 from tap_pinterest_ads.client import PinterestStream
 
