@@ -221,8 +221,9 @@ class AdAnalyticsStream(PinterestStream):
     path = "ad_accounts/{ad_account_id}/ads/analytics?ad_ids={ad_id}"
     records_jsonpath = "$[*]"
     ignore_parent_replication_keys = True
-    primary_keys = ["DATE"]
+    primary_keys = ["AD_ID", "DATE"]
     replication_key = "DATE"
+    state_partitioning_keys = ["AD_ID"]
     properties = [
         Property("AD_ID", StringType),
         Property("DATE", DateTimeType),
@@ -303,7 +304,7 @@ class AccountAnalyticsStream(PinterestStream):
     path = "ad_accounts/{ad_account_id}/analytics"
     records_jsonpath = "$[*]"
     ignore_parent_replication_keys = True
-    primary_keys = ["DATE"]
+    primary_keys = ["AD_ACCOUNT_ID", "DATE"]
     replication_key = "DATE"
     properties = [
         Property("AD_ACCOUNT_ID", StringType),
