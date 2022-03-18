@@ -218,7 +218,7 @@ AD_ANALYTICS_COLUMNS = [
 class AdAnalyticsStream(PinterestStream):
     name = 'ad_analytics'
     parent_stream_type = AdStream
-    path = "ad_accounts/{ad_account_id}/ads/analytics?ad_ids={ad_id}"
+    path = "ad_accounts/{ad_account_id}/ads/analytics"
     records_jsonpath = "$[*]"
     ignore_parent_replication_keys = True
     primary_keys = ["AD_ID", "DATE"]
@@ -244,6 +244,7 @@ class AdAnalyticsStream(PinterestStream):
             'granularity': 'DAY',
             'columns': ','.join(AD_ANALYTICS_COLUMNS),
             'page_size': 100,
+            'ad_ids': context["ad_id"],
         }
         if next_page_token:
             params['bookmark'] = next_page_token
@@ -259,7 +260,7 @@ class AdAnalyticsStream(PinterestStream):
         Each row emitted should be a dictionary of property names to their values.
         """
         if context["ad_status"] != "ACTIVE" and self.config["is_backfilled"] == True:
-            self.logger.debug("Skipping inactive ad {ad_id} sync.".format(ad_id=context["ad_id"]))
+            self.logger.info("Skipping inactive ad {ad_id} sync.".format(ad_id=context["ad_id"]))
             return []
         return super().get_records(context)
 
