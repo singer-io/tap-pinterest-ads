@@ -1,6 +1,8 @@
 """Stream type classes for tap-pinterest."""
 import copy
 import datetime
+from urllib.parse import urlparse
+from urllib.parse import parse_qs
 
 import requests
 from typing import Any, Callable, Dict, Iterable, Optional
@@ -240,20 +242,20 @@ class AdAnalyticsStream(PinterestStream):
     def get_url_params(
         self, context: Optional[dict], next_page_token: Optional[Any]
     ) -> Optional[dict]:
-        start_date = self.get_starting_timestamp(context)
-        yesterday = datetime.datetime.now(tz=start_date.tzinfo) - datetime.timedelta(days=1)
+        if next_page_token:
+            start_date = next_page_token
+        else:
+            start_date = self.get_starting_timestamp(context)
+        yesterday = (datetime.datetime.now(tz=start_date.tzinfo) - datetime.timedelta(days=1)).date()
+        end_date = min((start_date + datetime.timedelta(days=100)).date(), yesterday)
         params = {
             'start_date': start_date.strftime('%Y-%m-%d'),
-            'end_date': (
-                min(start_date + datetime.timedelta(days=100), yesterday)
-            ).strftime('%Y-%m-%d'),
+            'end_date': end_date.strftime('%Y-%m-%d'),
             'granularity': 'DAY',
             'columns': ','.join(AD_ANALYTICS_COLUMNS),
             'page_size': 100,
             'ad_ids': context["ad_id"],
         }
-        if next_page_token:
-            params['bookmark'] = next_page_token
         self.logger.debug(params)
         return params
 
@@ -270,7 +272,19 @@ class AdAnalyticsStream(PinterestStream):
             return []
         return super().get_records(context)
 
-    
+    def get_next_page_token(
+        self, response: requests.Response, previous_token: Optional[Any]
+    ) -> Any:
+        end_date = datetime.datetime.strptime(parse_qs(urlparse(response.request.url).query)['end_date'][0], '%Y-%m-%d')
+        start_date = datetime.datetime.strptime(parse_qs(urlparse(response.request.url).query)['start_date'][0], '%Y-%m-%d')
+        yesterday = datetime.datetime.now(tz=start_date.tzinfo) - datetime.timedelta(days=1)
+        if end_date.date() < yesterday.date():
+            next_page_token = end_date + datetime.timedelta(days=1)
+        else:
+            next_page_token = None
+        return next_page_token
+
+
 ACCOUNT_ANALYTICS_COLUMNS = [
     "AD_GROUP_ENTITY_STATUS", "CAMPAIGN_DAILY_SPEND_CAP",
     "CAMPAIGN_ENTITY_STATUS", "CAMPAIGN_ID", "CAMPAIGN_LIFETIME_SPEND_CAP", "CAMPAIGN_NAME",
@@ -323,22 +337,34 @@ class AccountAnalyticsStream(PinterestStream):
     def get_url_params(
         self, context: Optional[dict], next_page_token: Optional[Any]
     ) -> Optional[dict]:
-        start_date = self.get_starting_timestamp(context)
-        yesterday = datetime.datetime.now(tz=start_date.tzinfo) - datetime.timedelta(days=1)
+        if next_page_token:
+            start_date = next_page_token
+        else:
+            start_date = self.get_starting_timestamp(context)
+        yesterday = (datetime.datetime.now(tz=start_date.tzinfo) - datetime.timedelta(days=1)).date()
+        end_date = min((start_date + datetime.timedelta(days=100)).date(), yesterday)
         params = {
             'start_date': start_date.strftime('%Y-%m-%d'),
-            'end_date': (
-                min(start_date + datetime.timedelta(days=100), yesterday)
-            ).strftime('%Y-%m-%d'),
+            'end_date': end_date.strftime('%Y-%m-%d'),
             'granularity': 'DAY',
             'columns': ','.join(ACCOUNT_ANALYTICS_COLUMNS),
             'page_size': 100,
         }
-        if next_page_token:
-            params['bookmark'] = next_page_token
         self.logger.debug(params)
         return params
     
     def post_process(self, row: dict, context: Optional[dict] = None) -> Optional[dict]:
         row["DATE"] = datetime.datetime.strptime(row["DATE"], "%Y-%m-%d").strftime("%Y-%m-%dT%H:%M:%SZ")
         return row
+
+    def get_next_page_token(
+        self, response: requests.Response, previous_token: Optional[Any]
+    ) -> Any:
+        end_date = datetime.datetime.strptime(parse_qs(urlparse(response.request.url).query)['end_date'][0], '%Y-%m-%d')
+        start_date = datetime.datetime.strptime(parse_qs(urlparse(response.request.url).query)['start_date'][0], '%Y-%m-%d')
+        yesterday = datetime.datetime.now(tz=start_date.tzinfo) - datetime.timedelta(days=1)
+        if end_date.date() < yesterday.date():
+            next_page_token = end_date + datetime.timedelta(days=1)
+        else:
+            next_page_token = None
+        return next_page_token
