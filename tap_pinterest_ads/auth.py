@@ -48,11 +48,11 @@ class PinterestAuthenticator(OAuthAuthenticator, metaclass=SingletonMeta):
             self.auth_endpoint,
             headers={
                 "Content-Type": "application/x-www-form-urlencoded",
-                "Authorization": "Bearer {auth}".format(
+                "Authorization": "Basic {auth}".format(
                     auth=base64.b64encode('{client_id}:{client_secret}'.format(
                         client_id=self.config['client_id'],
                         client_secret=self.config['client_secret']
-                    ).encode('ascii'))
+                    ).encode('ascii')).decode('utf-8')
                 )
             },
             data=auth_request_payload
