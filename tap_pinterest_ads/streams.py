@@ -246,9 +246,9 @@ class AdAnalyticsStream(PinterestStream):
             start_date = next_page_token
         else:
             start_date = self.get_starting_timestamp(context)
-            if start_date.date() < (datetime.datetime.now() - datetime.timedelta(days=90)).date():
+            if start_date.date() < (datetime.datetime.now(tz=start_date.tzinfo) - datetime.timedelta(days=90)).date():
                 self.logger.info("Ad analytics can only lookback a maximum of 90 days, bringing start_date forward")
-                start_date = max(start_date, datetime.datetime.now() - datetime.timedelta(days=90))
+                start_date = max(start_date, datetime.datetime.now(tz=start_date.tzinfo) - datetime.timedelta(days=90))
         yesterday = (datetime.datetime.now(tz=start_date.tzinfo) - datetime.timedelta(days=1)).date()
         end_date = min((start_date + datetime.timedelta(days=100)).date(), yesterday)
         params = {
