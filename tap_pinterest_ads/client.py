@@ -100,3 +100,11 @@ class PinterestStream(RESTStream):
             factor=5,
         )(func)
         return decorator
+
+    @property
+    def metadata(self):
+        self._metadata = super().metadata
+        if self._tap_input_catalog is None:
+            if not self.selected_by_default:
+                self._metadata.root.selected = None
+        return self._metadata

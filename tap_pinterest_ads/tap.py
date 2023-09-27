@@ -1,7 +1,6 @@
 """pinterest tap class."""
 
 from typing import List
-
 from singer_sdk import Tap, Stream
 from singer_sdk import typing as th  # JSON schema typing helpers
 
@@ -13,6 +12,8 @@ from tap_pinterest_ads.streams import (
     AdAnalyticsStream,
     AccountAnalyticsStream
 )
+from tap_pinterest_ads.singer_compat import SingerCompatibilityMixin
+
 STREAM_TYPES = [
     AdAccountStream,
     CampaignStream,
@@ -23,7 +24,7 @@ STREAM_TYPES = [
 ]
 
 
-class TapPinterestAds(Tap):
+class TapPinterestAds(SingerCompatibilityMixin, Tap):
     """pinterest tap class."""
     name = "tap-pinterest-ads"
 
