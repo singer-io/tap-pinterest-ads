@@ -25,16 +25,13 @@ class PinterestStream(RESTStream):
     @cached
     def authenticator(self) -> PinterestAuthenticator:
         """Return a new authenticator object."""
-        return PinterestAuthenticator.create_for_stream(self)
+        return PinterestAuthenticator.create_for_stream(self, self.config.get("access_token"))
 
     @property
     def http_headers(self) -> dict:
         """Return the http headers needed."""
-        if not self.authenticator.is_token_valid():
-            self.logger.info("token invalid")
-            self.authenticator.update_access_token()
         headers = {'Accept': 'application/json'}
-        headers["Authorization"] = "Bearer {token}".format(token=self.authenticator.access_token)
+        headers.update(self.authenticator.auth_headers)
         return headers
 
     def get_next_page_token(

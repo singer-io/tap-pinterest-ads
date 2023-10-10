@@ -32,19 +32,19 @@ class TapPinterestAds(SingerCompatibilityMixin, Tap):
         th.Property(
             "client_id",
             th.StringType,
-            required=True,
+            required=False,
             description="App ID"
         ),
         th.Property(
             "client_secret",
             th.StringType,
-            required=True,
+            required=False,
             description="App secret key"
         ),
         th.Property(
             "refresh_token",
             th.StringType,
-            required=True,
+            required=False,
             description="Refresh token obtained from the OAuth user flow"
         ),
         th.Property(
@@ -60,6 +60,8 @@ class TapPinterestAds(SingerCompatibilityMixin, Tap):
             description="Set to True once backfilled in order to reduce API calls per day"
         ),
     ).to_dict()
+
+    
 
     def discover_streams(self) -> List[Stream]:
         """Return a list of discovered streams."""
