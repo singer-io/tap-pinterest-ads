@@ -345,7 +345,7 @@ class AccountAnalyticsStream(PinterestStream):
         else:
             start_date = self.get_starting_timestamp(context)
         yesterday = (datetime.datetime.now(tz=start_date.tzinfo) - datetime.timedelta(days=1)).date()
-        end_date = min((start_date + datetime.timedelta(days=100)).date(), yesterday)
+        end_date = min((start_date + datetime.timedelta(days=90)).date(), yesterday)
         params = {
             'start_date': start_date.strftime('%Y-%m-%d'),
             'end_date': end_date.strftime('%Y-%m-%d'),
