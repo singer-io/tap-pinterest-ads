@@ -19,6 +19,7 @@ class PinterestStream(RESTStream):
 
     records_jsonpath = "$.items[*]"  # Or override `parse_response`.
     next_page_token_jsonpath = "$.bookmark"  # Or override `get_next_page_token`.
+    selected_by_default = False
 
     @property
     @cached
