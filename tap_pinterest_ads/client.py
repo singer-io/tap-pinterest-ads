@@ -103,8 +103,12 @@ class PinterestStream(RESTStream):
 
     @property
     def metadata(self):
+        """
+        This fixes compatibility with stitch for non-discoverable metadata
+        """
         self._metadata = super().metadata
         if self._tap_input_catalog is None:
             if not self.selected_by_default:
                 self._metadata.root.selected = None
         return self._metadata
+
