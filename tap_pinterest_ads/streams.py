@@ -222,6 +222,9 @@ AD_ANALYTICS_COLUMNS = [
     "VIDEO_P50_COMBINED_2", "VIDEO_P75_COMBINED_2", "VIDEO_P95_COMBINED_2",
     "WEB_CHECKOUT_COST_PER_ACTION", "WEB_CHECKOUT_ROAS"
 ]
+AD_ANALYTICS_COLUMNS_SCHEMA = {
+    "AD_ID":StringType
+}
 
 class AdAnalyticsStream(PinterestStream):
     name = 'ad_analytics'
@@ -233,10 +236,12 @@ class AdAnalyticsStream(PinterestStream):
     replication_key = "DATE"
     state_partitioning_keys = ["AD_ID"]
     properties = [
-        Property("AD_ID", StringType),
+        Property("AD_ACCOUNT_ID", StringType),
         Property("DATE", DateTimeType),
     ]
-    properties += [Property(a, NumberType) for a in AD_ANALYTICS_COLUMNS]
+    properties +=[
+        Property(a, AD_ANALYTICS_COLUMNS_SCHEMA.get(a,NumberType)) for a in AD_ANALYTICS_COLUMNS]
+
     schema = PropertiesList(*properties).to_dict()
 
     def get_url_params(
