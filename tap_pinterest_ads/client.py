@@ -34,7 +34,7 @@ class PinterestStream(RESTStream):
             self.logger.info("token invalid")
             self.authenticator.update_access_token()
         headers = {'Accept': 'application/json'}
-        headers["Authorization"] = "Bearer {token}".format(token=self.authenticator.access_token)
+        headers.update(self.authenticator.auth_headers)
         return headers
 
     def get_next_page_token(

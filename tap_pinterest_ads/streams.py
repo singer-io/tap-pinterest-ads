@@ -222,7 +222,9 @@ AD_ANALYTICS_COLUMNS = [
     "VIDEO_P50_COMBINED_2", "VIDEO_P75_COMBINED_2", "VIDEO_P95_COMBINED_2",
     "WEB_CHECKOUT_COST_PER_ACTION", "WEB_CHECKOUT_ROAS"
 ]
-
+AD_ANALYTICS_COLUMNS_SCHEMA = {
+    "AD_ID":StringType
+}
 class AdAnalyticsStream(PinterestStream):
     name = 'ad_analytics'
     parent_stream_type = AdStream
@@ -236,7 +238,9 @@ class AdAnalyticsStream(PinterestStream):
         Property("AD_ID", StringType),
         Property("DATE", DateTimeType),
     ]
-    properties += [Property(a, NumberType) for a in AD_ANALYTICS_COLUMNS]
+    properties +=[
+        Property(a, AD_ANALYTICS_COLUMNS_SCHEMA.get(a,NumberType))\
+        for a in AD_ANALYTICS_COLUMNS]
     schema = PropertiesList(*properties).to_dict()
 
     def get_url_params(
@@ -250,7 +254,7 @@ class AdAnalyticsStream(PinterestStream):
                 self.logger.info("Ad analytics can only lookback a maximum of 90 days, bringing start_date forward")
                 start_date = max(start_date, datetime.datetime.now(tz=start_date.tzinfo) - datetime.timedelta(days=89))
         yesterday = (datetime.datetime.now(tz=start_date.tzinfo) - datetime.timedelta(days=1)).date()
-        end_date = min((start_date + datetime.timedelta(days=100)).date(), yesterday)
+        end_date = min((start_date + datetime.timedelta(days=90)).date(), yesterday)
         params = {
             'start_date': start_date.strftime('%Y-%m-%d'),
             'end_date': end_date.strftime('%Y-%m-%d'),
@@ -355,7 +359,7 @@ class AccountAnalyticsStream(PinterestStream):
         }
         self.logger.debug(params)
         return params
-    
+
     def post_process(self, row: dict, context: Optional[dict] = None) -> Optional[dict]:
         row["DATE"] = datetime.datetime.strptime(row["DATE"], "%Y-%m-%d").strftime("%Y-%m-%dT%H:%M:%SZ")
         return row
