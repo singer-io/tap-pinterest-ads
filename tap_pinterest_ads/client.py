@@ -9,7 +9,7 @@ from singer_sdk.helpers.jsonpath import extract_jsonpath
 from singer_sdk.streams import RESTStream
 from singer_sdk.exceptions import FatalAPIError, RetriableAPIError
 
-from tap_pinterest_ads.auth import PinterestAuthenticator
+from singer_sdk.authenticators import BearerTokenAuthenticator
 
 
 class PinterestStream(RESTStream):
@@ -19,12 +19,13 @@ class PinterestStream(RESTStream):
 
     records_jsonpath = "$.items[*]"  # Or override `parse_response`.
     next_page_token_jsonpath = "$.bookmark"  # Or override `get_next_page_token`.
+    selected_by_default = False
 
     @property
     @cached
-    def authenticator(self) -> PinterestAuthenticator:
+    def authenticator(self) -> BearerTokenAuthenticator:
         """Return a new authenticator object."""
-        return PinterestAuthenticator.create_for_stream(self)
+        return BearerTokenAuthenticator.create_for_stream(self, self.config.get("access_token"))
 
     @property
     def http_headers(self) -> dict:
@@ -100,3 +101,14 @@ class PinterestStream(RESTStream):
             factor=5,
         )(func)
         return decorator
+
+    @property
+    def metadata(self):
+        """
+        This fixes compatibility with stitch for non-discoverable metadata
+        """
+        self._metadata = super().metadata
+        if self._tap_input_catalog is None:
+            if not self.selected_by_default:
+                self._metadata.root.selected = None
+        return self._metadata

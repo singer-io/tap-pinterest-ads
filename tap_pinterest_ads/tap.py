@@ -4,6 +4,7 @@ from typing import List
 
 from singer_sdk import Tap, Stream
 from singer_sdk import typing as th  # JSON schema typing helpers
+from tap_pinterest_ads.utils import SingerCompatibilityMixin
 
 from tap_pinterest_ads.streams import (
     AdAccountStream,
@@ -23,7 +24,7 @@ STREAM_TYPES = [
 ]
 
 
-class TapPinterestAds(Tap):
+class TapPinterestAds(SingerCompatibilityMixin, Tap):
     """pinterest tap class."""
     name = "tap-pinterest-ads"
 
@@ -31,19 +32,25 @@ class TapPinterestAds(Tap):
         th.Property(
             "client_id",
             th.StringType,
-            required=True,
+            required=False,
             description="App ID"
         ),
         th.Property(
             "client_secret",
             th.StringType,
-            required=True,
+            required=False,
             description="App secret key"
         ),
         th.Property(
             "refresh_token",
             th.StringType,
-            required=True,
+            required=False,
+            description="Refresh token obtained from the OAuth user flow"
+        ),
+        th.Property(
+            "access_token",
+            th.StringType,
+            required=False,
             description="Refresh token obtained from the OAuth user flow"
         ),
         th.Property(
