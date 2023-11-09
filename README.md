@@ -70,3 +70,6 @@ You can also test the `tap-pinterest-ads` CLI interface directly using `poetry r
 ```bash
 poetry run tap-pinterest-ads --help
 ```
+---
+
+Copyright &copy; 2023 Stitch
